@@ -14,6 +14,7 @@ class Particle:
         self.px=self.cx+self.r*sin(self.theta)
         self.py=self.cy+self.r*cos(self.theta)
         
+    
     def display(self):
         if self.r > 0:
             fill(random(0,255),random(0,255),random(0,255))
