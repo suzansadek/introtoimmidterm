@@ -49,6 +49,9 @@ class Mario(Creature):
         
         self.y += self.vy
         self.x += self.vx
+        
+        if self.x - self.r < 0:
+            self.x = self.r
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 class Game:
     def __init__(self, w, h, g):
