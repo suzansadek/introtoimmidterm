@@ -3,12 +3,14 @@ path = os.getcwd()
                 
 class Game:
     def __init__(self, w, h, g):
-        # add attributes here for width, height and ground
-
+        self.w = w
+        self.h = h
+        self.g = g
         
     def display(self):
-        # draw ground here with color coding: 0, 140, 0
-        
+        stroke(0, 140, 0)
+        fill(0, 140, 0)
+        rect(0, self.g, self.w, self.h)
         
 game = Game(1024, 768, 600)
 
