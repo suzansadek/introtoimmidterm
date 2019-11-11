@@ -2,13 +2,18 @@ import os
 path = os.getcwd()
 
 class Creature:
-    def __init__(self, x, y, r, g):
+    def __init__(self, x, y, r, g, img, w, h):
         self.x = x
         self.y = y
         self.r = r
         self.g = g
         self.vy = 0
-        self.vx = 0               
+        self.vx = 0
+        self.img = loadImage(path + "/images/" + img)
+        self.img_w = w
+        self.img_h = h
+        self.slice = 0
+        self.direction = RIGHT              
   
     def gravity(self):
         
@@ -27,11 +32,15 @@ class Creature:
         
     def display(self):
         self.update()
-        circle(self.x, self.y, self.r * 2)        
-
+        # circle(self.x, self.y, self.r * 2)
+        if self.direction == RIGHT:
+            image(self.img, self.x - self.img_w//2, self.y - self.img_h//2, self.img_w, self.img_h, self.slice * self.img_w, 0, (self.slice + 1) * self.img_w, self.img_h)        
+        elif self.direction == LEFT:
+            image(self.img, self.x - self.img_w//2, self.y - self.img_h//2, self.img_w, self.img_h, (self.slice + 1) * self.img_w, 0, (self.slice) * self.img_w, self.img_h)
+            
 class Mario(Creature):
-    def __init__(self, x, y, r, g):
-        Creature.__init__(self, x, y, r, g)
+    def __init__(self, x, y, r, g, img, w, h):
+        Creature.__init__(self, x, y, r, g, img, w, h)
         self.key_handler = {LEFT:False, RIGHT:False, UP:False}                                                               
                            
     def update(self):
@@ -39,8 +48,10 @@ class Mario(Creature):
         
         if self.key_handler[LEFT] == True:
             self.vx = -5
+            self.direction = LEFT
         elif self.key_handler[RIGHT] == True:
             self.vx = 5
+            self.direction = RIGHT
         else:
             self.vx = 0
         
@@ -58,7 +69,7 @@ class Game:
         self.w = w
         self.h = h
         self.g = g
-        self.mario = Mario(50, 50, 35, self.g)
+        self.mario = Mario(50, 50, 35, self.g, "mario.png", 100, 70)
         
     def display(self):
         stroke(0, 140, 0)
