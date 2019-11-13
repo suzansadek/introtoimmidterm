@@ -139,6 +139,10 @@ class Game:
         self.gombas = []
         for i in range(4):
             self.gombas.append(Gomba(random.randint(200, 800), 50, 35, self.g, "gomba.png", 70, 70, 5, 200, 800))
+            
+        self.bg_images = []
+        for i in range(5, 0 , -1):
+            self.bg_images.append(loadImage(path + "/images/layer_0" + str(i) + ".png"))
         
     def display(self):
         if self.mario.alive == False:
@@ -147,11 +151,13 @@ class Game:
             text("Game over", 500, 350)
             return
         
-        stroke(0, 140, 0)
-        fill(0, 140, 0)
-        rect(0, self.g, self.w, self.h)
-        noFill()
-        stroke(0,0,0)
+        # stroke(0, 140, 0)
+        # fill(0, 140, 0)
+        # rect(0, self.g, self.w, self.h)
+        # noFill()
+        # stroke(0,0,0)
+        for img in self.bg_images:
+            image(img, 0, 0)
         
         for p in self.platforms:
             p.display()
@@ -161,7 +167,7 @@ class Game:
             
         self.mario.display()
         
-game = Game(1024, 768, 600)
+game = Game(1280, 720, 585)
 
 def setup():
     size(game.w, game.h)
@@ -190,7 +196,7 @@ def keyReleased():
 def mouseClicked():
     global game
     if game.mario.alive == False:
-        game = Game(1024, 768, 600)
+        game = Game(1280, 720, 585)
     
     
     
