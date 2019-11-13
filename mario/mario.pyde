@@ -30,7 +30,7 @@ class Creature:
             if self.y + self.r <= p.y and self.x + self.r >= p.x and self.x - self.r <= p.x + p.w:
                 self.g = p.y
                 break
-            # else:
+
             self.g = game.g
             
     def update(self):
@@ -43,9 +43,9 @@ class Creature:
         self.update()
         # circle(self.x, self.y, self.r * 2)
         if self.direction == RIGHT:
-            image(self.img, self.x - self.img_w//2, self.y - self.img_h//2, self.img_w, self.img_h, self.slice * self.img_w, 0, (self.slice + 1) * self.img_w, self.img_h)        
+            image(self.img, self.x - self.img_w//2 - game.x_shift, self.y - self.img_h//2, self.img_w, self.img_h, self.slice * self.img_w, 0, (self.slice + 1) * self.img_w, self.img_h)        
         elif self.direction == LEFT:
-            image(self.img, self.x - self.img_w//2, self.y - self.img_h//2, self.img_w, self.img_h, (self.slice + 1) * self.img_w, 0, (self.slice) * self.img_w, self.img_h)
+            image(self.img, self.x - self.img_w//2 - game.x_shift, self.y - self.img_h//2, self.img_w, self.img_h, (self.slice + 1) * self.img_w, 0, (self.slice) * self.img_w, self.img_h)
     
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2) **0.5
@@ -88,6 +88,9 @@ class Mario(Creature):
                 else:
                     self.alive = False
 
+        if self.x >= game.w//2:
+            game.x_shift += self.vx
+        
 class Gomba(Creature):
     def __init__(self, x, y, r, g, img, w, h, frames, x1, x2):
         Creature.__init__(self, x, y, r, g, img, w, h, frames)
@@ -122,13 +125,14 @@ class Platform:
     def display(self):
         fill(0, 255, 0)
         # rect(self.x, self.y, self. w, self.h)        
-        image(self.img, self.x, self.y, self.w, self.h)
+        image(self.img, self.x - game.x_shift, self.y, self.w, self.h)
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 class Game:
     def __init__(self, w, h, g):
         self.w = w
         self.h = h
         self.g = g
+        self.x_shift = 0
         self.mario = Mario(50, 50, 35, self.g, "mario.png", 100, 70, 11)
         self.platforms = []
         for i in range(3):
@@ -141,7 +145,7 @@ class Game:
             self.gombas.append(Gomba(random.randint(200, 800), 50, 35, self.g, "gomba.png", 70, 70, 5, 200, 800))
             
         self.bg_images = []
-        for i in range(5, 0 , -1):
+        for i in range(1, 6):
             self.bg_images.append(loadImage(path + "/images/layer_0" + str(i) + ".png"))
         
     def display(self):
@@ -156,8 +160,24 @@ class Game:
         # rect(0, self.g, self.w, self.h)
         # noFill()
         # stroke(0,0,0)
-        for img in self.bg_images:
-            image(img, 0, 0)
+        cnt = 1
+        x = 0
+        for img in self.bg_images[::-1]:
+            if cnt == 1:
+                x = self.x_shift//4
+            elif cnt == 2:
+                x = self.x_shift//3
+            elif cnt == 3:
+                x = self.x_shift//2
+            elif cnt == 4 or cnt == 5:
+                x = self.x_shift
+            
+            cnt += 1
+            width_right = x % self.w
+            width_left = self.w - width_right
+            
+            image(img, 0, 0, width_left, self.h, width_right, 0, self.w, self.h)
+            image(img, width_left, 0, width_right, self.h, 0, 0, width_right, self.h)
         
         for p in self.platforms:
             p.display()
