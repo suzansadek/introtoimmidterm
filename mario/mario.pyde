@@ -163,6 +163,7 @@ class Game:
             fill(255,0,0)
             textSize(15)
             text("Game over", 500, 350)
+            self.background_sound.close()
             return
         
         # stroke(0, 140, 0)
