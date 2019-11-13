@@ -2,7 +2,7 @@ import os
 path = os.getcwd()
 
 class Creature:
-    def __init__(self, x, y, r, g, img, w, h):
+    def __init__(self, x, y, r, g, img, w, h, frames):
         self.x = x
         self.y = y
         self.r = r
@@ -12,8 +12,9 @@ class Creature:
         self.img = loadImage(path + "/images/" + img)
         self.img_w = w
         self.img_h = h
-        self.slice = 0
-        self.direction = RIGHT              
+        self.slice = 7
+        self.direction = RIGHT 
+        self.frames = frames             
   
     def gravity(self):
         
@@ -39,8 +40,8 @@ class Creature:
             image(self.img, self.x - self.img_w//2, self.y - self.img_h//2, self.img_w, self.img_h, (self.slice + 1) * self.img_w, 0, (self.slice) * self.img_w, self.img_h)
             
 class Mario(Creature):
-    def __init__(self, x, y, r, g, img, w, h):
-        Creature.__init__(self, x, y, r, g, img, w, h)
+    def __init__(self, x, y, r, g, img, w, h, frames):
+        Creature.__init__(self, x, y, r, g, img, w, h, frames)
         self.key_handler = {LEFT:False, RIGHT:False, UP:False}                                                               
                            
     def update(self):
@@ -61,6 +62,9 @@ class Mario(Creature):
         self.y += self.vy
         self.x += self.vx
         
+        if frameCount % 5 == 0 and self.vx != 0 and self.vy == 0:
+            self.slice = (self.slice + 1) % self.frames
+        
         if self.x - self.r < 0:
             self.x = self.r
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
@@ -69,7 +73,7 @@ class Game:
         self.w = w
         self.h = h
         self.g = g
-        self.mario = Mario(50, 50, 35, self.g, "mario.png", 100, 70)
+        self.mario = Mario(50, 50, 35, self.g, "mario.png", 100, 70, 11)
         
     def display(self):
         stroke(0, 140, 0)
