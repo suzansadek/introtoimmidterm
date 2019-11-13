@@ -25,6 +25,13 @@ class Creature:
             
             if self.y + self.r + self.vy > self.g:
                 self.vy = self.g - (self.y+self.r)
+        
+        for p in game.platforms:
+            if self.y + self.r <= p.y and self.x + self.r >= p.x and self.x - self.r <= p.x + p.w:
+                self.g = p.y
+                break
+            # else:
+            self.g = game.g
             
     def update(self):
         self.gravity()
@@ -57,7 +64,7 @@ class Mario(Creature):
             self.vx = 0
         
         if self.key_handler[UP] == True and self.y+self.r == self.g:
-            self.vy = -15
+            self.vy = -12
         
         self.y += self.vy
         self.x += self.vx
@@ -67,13 +74,31 @@ class Mario(Creature):
         
         if self.x - self.r < 0:
             self.x = self.r
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+
+class Platform:
+    def __init__(self, x, y, w, h, img):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+        self.img = loadImage(path + "/images/" + img)
+        
+    def display(self):
+        fill(0, 255, 0)
+        # rect(self.x, self.y, self. w, self.h)        
+        image(self.img, self.x, self.y, self.w, self.h)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 class Game:
     def __init__(self, w, h, g):
         self.w = w
         self.h = h
         self.g = g
         self.mario = Mario(50, 50, 35, self.g, "mario.png", 100, 70, 11)
+        self.platforms = []
+        for i in range(3):
+            x = 200 + i * 300
+            y = 500 - i * 100
+            self.platforms.append(Platform(x, y, 200, 50, "platform.png"))
         
     def display(self):
         stroke(0, 140, 0)
@@ -81,6 +106,10 @@ class Game:
         rect(0, self.g, self.w, self.h)
         noFill()
         stroke(0,0,0)
+        
+        for p in self.platforms:
+            p.display()
+            
         self.mario.display()
         
 game = Game(1024, 768, 600)
@@ -108,7 +137,5 @@ def keyReleased():
         game.mario.key_handler[RIGHT] = False
     elif keyCode == UP:
         game.mario.key_handler[UP] = False   
-    
-    
     
     
