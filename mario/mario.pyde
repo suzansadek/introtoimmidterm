@@ -1,4 +1,4 @@
-import os
+import os, random
 path = os.getcwd()
 
 class Creature:
@@ -12,7 +12,7 @@ class Creature:
         self.img = loadImage(path + "/images/" + img)
         self.img_w = w
         self.img_h = h
-        self.slice = 7
+        self.slice = 0
         self.direction = RIGHT 
         self.frames = frames             
   
@@ -37,6 +37,7 @@ class Creature:
         self.gravity()
         self.y += self.vy
         self.x += self.vx
+            
         
     def display(self):
         self.update()
@@ -45,12 +46,17 @@ class Creature:
             image(self.img, self.x - self.img_w//2, self.y - self.img_h//2, self.img_w, self.img_h, self.slice * self.img_w, 0, (self.slice + 1) * self.img_w, self.img_h)        
         elif self.direction == LEFT:
             image(self.img, self.x - self.img_w//2, self.y - self.img_h//2, self.img_w, self.img_h, (self.slice + 1) * self.img_w, 0, (self.slice) * self.img_w, self.img_h)
-            
+    
+    def distance(self, target):
+        return ((self.x - target.x)**2 + (self.y - target.y)**2) **0.5
+    
+    
 class Mario(Creature):
     def __init__(self, x, y, r, g, img, w, h, frames):
         Creature.__init__(self, x, y, r, g, img, w, h, frames)
         self.key_handler = {LEFT:False, RIGHT:False, UP:False}                                                               
-                           
+        self.alive = True
+               
     def update(self):
         self.gravity()
         
@@ -74,6 +80,36 @@ class Mario(Creature):
         
         if self.x - self.r < 0:
             self.x = self.r
+            
+        for g in game.gombas:
+            if g.distance(self) <= self.r + g.r:
+                if self.vy > 0:
+                    game.gombas.remove(g)
+                else:
+                    self.alive = False
+
+class Gomba(Creature):
+    def __init__(self, x, y, r, g, img, w, h, frames, x1, x2):
+        Creature.__init__(self, x, y, r, g, img, w, h, frames)
+        self.vx = random.randint(1,5)
+        self.x1 = x1
+        self.x2 = x2
+        
+    def update(self):
+        self.gravity()
+        
+        if self.x < self.x1:
+            self.direction = RIGHT
+            self.vx *= -1
+        elif self.x > self.x2:
+            self.direction = LEFT
+            self.vx *= -1
+        
+        if frameCount % 10 == 0:
+            self.slice = (self.slice + 1) % self.frames
+            
+        self.y += self.vy
+        self.x += self.vx
 
 class Platform:
     def __init__(self, x, y, w, h, img):
@@ -99,8 +135,18 @@ class Game:
             x = 200 + i * 300
             y = 500 - i * 100
             self.platforms.append(Platform(x, y, 200, 50, "platform.png"))
+            
+        self.gombas = []
+        for i in range(4):
+            self.gombas.append(Gomba(random.randint(200, 800), 50, 35, self.g, "gomba.png", 70, 70, 5, 200, 800))
         
     def display(self):
+        if self.mario.alive == False:
+            fill(255,0,0)
+            textSize(15)
+            text("Game over", 500, 350)
+            return
+        
         stroke(0, 140, 0)
         fill(0, 140, 0)
         rect(0, self.g, self.w, self.h)
@@ -109,6 +155,9 @@ class Game:
         
         for p in self.platforms:
             p.display()
+            
+        for g in self.gombas:
+            g.display()
             
         self.mario.display()
         
@@ -137,5 +186,11 @@ def keyReleased():
         game.mario.key_handler[RIGHT] = False
     elif keyCode == UP:
         game.mario.key_handler[UP] = False   
+    
+def mouseClicked():
+    global game
+    if game.mario.alive == False:
+        game = Game(1024, 768, 600)
+    
     
     
