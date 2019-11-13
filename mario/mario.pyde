@@ -1,5 +1,7 @@
+add_library('minim')
 import os, random
 path = os.getcwd()
+player = Minim(this)
 
 class Creature:
     def __init__(self, x, y, r, g, img, w, h, frames):
@@ -56,6 +58,8 @@ class Mario(Creature):
         Creature.__init__(self, x, y, r, g, img, w, h, frames)
         self.key_handler = {LEFT:False, RIGHT:False, UP:False}                                                               
         self.alive = True
+        self.jump_sound = player.loadFile(path + "/sounds/jump.mp3")
+        self.kill_sound = player.loadFile(path + "/sounds/kill.mp3")
                
     def update(self):
         self.gravity()
@@ -71,6 +75,8 @@ class Mario(Creature):
         
         if self.key_handler[UP] == True and self.y+self.r == self.g:
             self.vy = -12
+            self.jump_sound.rewind()
+            self.jump_sound.play()
         
         self.y += self.vy
         self.x += self.vx
@@ -85,6 +91,8 @@ class Mario(Creature):
             if g.distance(self) <= self.r + g.r:
                 if self.vy > 0:
                     game.gombas.remove(g)
+                    self.kill_sound.rewind()
+                    self.kill_sound.play()
                 else:
                     self.alive = False
 
@@ -133,6 +141,8 @@ class Game:
         self.h = h
         self.g = g
         self.x_shift = 0
+        self.background_sound = player.loadFile(path + "/sounds/background.mp3")
+        self.background_sound.play()
         self.mario = Mario(50, 50, 35, self.g, "mario.png", 100, 70, 11)
         self.platforms = []
         for i in range(3):
